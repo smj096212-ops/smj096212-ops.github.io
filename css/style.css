@@ -1,0 +1,473 @@
+/* 모바일 퍼스트: 기본 스타일은 좁은 화면 기준, 넓은 화면(860px+)에서 보드+랭킹 패널이 나란히 배치됨.
+   "하드 난이도" 컨셉의 다크 테마 — 2048 고수를 위한 스피드런 사이트라는 톤에 맞춘 배색. */
+
+:root {
+  --bg: #121014;
+  --surface: #1c1a20;
+  --text: #e8e3dd;
+  --text-dim: #9b9298;
+  --board-bg: #2a2730;
+  --cell-bg: #37333d;
+  --accent: #ff3b30;
+  --accent-dim: #b8271f;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--accent);
+}
+
+/* 헤더 / 네비 */
+.site-header {
+  padding: 12px 16px;
+  background: var(--surface);
+  border-bottom: 2px solid var(--accent);
+}
+
+.site-nav {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.site-nav .brand {
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  margin-right: auto;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.site-nav a:not(.brand) {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+/* 광고 슬롯 placeholder — 실제 광고 삽입 전까지 레이아웃 확보용 */
+.ad-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 90px;
+  margin: 20px auto;
+  max-width: 960px;
+  border: 1px dashed #45414a;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+.ad-slot--below-board {
+  margin-top: 24px;
+}
+
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.game-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* 게임판(점수판/보드/광고)은 화면 폭과 무관하게 항상 중앙 정렬된 칼럼으로 두고,
+   설명 콘텐츠는 그 아래 전체 폭으로 흐르게 한다. 860px 이상에서는 보드 옆에 랭킹 패널이
+   나란히 붙으므로 이 칼럼도 함께 넓어진다 (.board-row 미디어쿼리 참고). */
+.game-column {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.tagline {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+  margin: 16px 0 0;
+}
+
+/* 점수판 */
+.score-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.score-box {
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 4px;
+  border-bottom: 3px solid var(--accent);
+  padding: 8px 14px;
+  text-align: center;
+  min-width: 72px;
+}
+
+.score-label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.score-value {
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.restart-btn {
+  margin-left: auto;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 16px;
+  min-height: 44px;
+  min-width: 44px;
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+
+.restart-btn:hover {
+  background: var(--accent-dim);
+}
+
+/* 보드 + 랭킹 패널을 감싸는 행. 좁은 화면(기본)에서는 세로로 쌓이고,
+   860px 이상에서는 보드 오른쪽에 랭킹 패널이 나란히 붙는다. */
+.board-row {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 게임판 */
+.board-wrap {
+  position: relative;
+  width: min(90vw, 480px);
+  margin: 0 auto;
+}
+
+.board {
+  position: relative; /* 타일 조각(.tile-piece)이 절대좌표로 배치되는 기준 */
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: var(--board-bg);
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 10px;
+  padding: 10px;
+  touch-action: none;
+}
+
+/* 항상 제자리에 고정된 빈 칸 배경 16개. 값/색은 그 위에 겹쳐지는 .tile-piece가 담당한다. */
+.tile-slot {
+  background: var(--cell-bg);
+  border-radius: 6px;
+}
+
+/* 슬라이드 이동을 담당하는 바깥 레이어. 위치(transform: translate)만 다루며,
+   원작 2048처럼 격자 흐름에서 빠져나와(position: absolute) 슬롯 위에 겹쳐진다. */
+.tile-piece {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: transform 0.1s ease-in-out;
+}
+
+/* 팝/등장 애니메이션을 담당하는 안쪽 레이어. 바깥 레이어의 위치 이동(translate)과
+   같은 transform 속성을 동시에 건드리면 서로 덮어써서 충돌하므로 레이어를 분리했다. */
+.tile-piece-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: clamp(16px, 5vw, 32px);
+  color: var(--text);
+  background: var(--cell-bg);
+}
+
+.tile-2 { background: #eee4da; color: #6b625a; }
+.tile-4 { background: #ede0c8; color: #6b625a; }
+.tile-8 { background: #f2b179; color: #fff; }
+.tile-16 { background: #f59563; color: #fff; }
+.tile-32 { background: #f67c5f; color: #fff; }
+.tile-64 { background: #f65e3b; color: #fff; }
+.tile-128 { background: #edcf72; color: #fff; }
+.tile-256 { background: #edcc61; color: #fff; }
+.tile-512 { background: #edc850; color: #fff; }
+.tile-1024 { background: #edc53f; color: #fff; font-size: clamp(14px, 4vw, 26px); }
+.tile-2048 { background: #edc22e; color: #fff; font-size: clamp(14px, 4vw, 26px); }
+
+/* 타일이 합쳐지거나 새로 생길 때의 동적인 피드백 */
+@keyframes tile-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+@keyframes tile-spawn {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.tile-pop-anim {
+  animation: tile-pop 0.15s ease;
+}
+
+.tile-spawn-anim {
+  animation: tile-spawn 0.15s ease;
+}
+
+/* 승리/패배 오버레이 */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: rgba(10, 9, 11, 0.88);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+  padding: 16px;
+}
+
+.overlay p {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+}
+
+#overlay-message {
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.overlay-detail {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text);
+}
+
+.overlay-percentile {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--accent);
+  max-width: 280px;
+}
+
+.overlay-nickname-form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.overlay-nickname-form input,
+.overlay-nickname-form select {
+  min-height: 44px;
+  padding: 8px 12px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid #45414a;
+  border-radius: 4px;
+  font-size: 15px;
+  width: 160px;
+  max-width: 60vw;
+}
+
+.overlay-nickname-form button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 16px;
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.overlay-status {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.overlay-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.overlay-actions button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 16px;
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+
+.overlay-actions button:hover {
+  background: var(--accent-dim);
+}
+
+/* 오버레이/랭킹 저장폼 등에서 재사용하는 표시 숨김 유틸리티 */
+.hidden {
+  display: none;
+}
+
+/* 랭킹 패널 (보드 옆/아래에 위치) */
+.ranking-panel {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--surface);
+  border-radius: 8px;
+  border-top: 3px solid var(--accent);
+  padding: 16px;
+}
+
+.ranking-title {
+  margin: 0 0 4px;
+  font-size: 17px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ranking-sub {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.leaderboard-table-wrap {
+  overflow-x: auto;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 8px 6px;
+  text-align: left;
+  border-bottom: 1px solid #35313a;
+}
+
+.leaderboard-table th {
+  color: var(--text-dim);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.leaderboard-empty {
+  white-space: nowrap;
+}
+
+.leaderboard-table tr.rank-top td:first-child {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* 콘텐츠 (규칙 / 공략 팁 / 순위 산정 방식 / FAQ) */
+.content-column section {
+  margin-bottom: 24px;
+}
+
+.content-column h2 {
+  font-size: 20px;
+}
+
+/* 본문 페이지 (소개/개인정보처리방침) 공용 */
+.page-content {
+  max-width: 720px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+.page-content h1 {
+  font-size: 26px;
+}
+
+.page-content h2 {
+  font-size: 19px;
+  margin-top: 28px;
+}
+
+.site-footer {
+  max-width: 960px;
+  margin: 32px auto 0;
+  padding: 16px;
+  border-top: 1px solid #2a272e;
+  font-size: 13px;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+/* 860px 이상: 보드 오른쪽에 랭킹 패널을 나란히 배치 */
+@media (min-width: 860px) {
+  .game-column {
+    max-width: 780px;
+  }
+
+  .board-row {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .board-wrap {
+    margin: 0;
+    flex: 0 0 480px;
+  }
+
+  .ranking-panel {
+    flex: 1;
+    min-width: 0;
+    max-width: none;
+    margin: 0;
+  }
+}
+

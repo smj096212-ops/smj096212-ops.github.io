@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2048 Speedrun - Race the World to the 2048 Tile</title>
+<meta name="description" content="A speedrun-focused 2048 for players who already know the game. No fluff, just a timer, a global leaderboard, and the question: how fast can you reach 2048?">
+<link rel="canonical" href="https://example.com/">
+<meta property="og:title" content="2048 Speedrun - Race the World to the 2048 Tile">
+<meta property="og:description" content="Built for 2048 veterans. Timed runs, a global fastest-time leaderboard, no hand-holding.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="/assets/og-image.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="site-nav">
+    <a href="/" class="brand">2048 SPEEDRUN</a>
+    <a href="/about.html">About</a>
+    <a href="/privacy-policy.html">Privacy Policy</a>
+  </nav>
+</header>
+
+<div class="ad-slot ad-slot--header">Ad</div>
+
+<main>
+  <div class="game-layout">
+    <div class="game-column">
+      <p class="tagline">For 2048 veterans — how fast can you finish?</p>
+      <section class="score-bar">
+        <div class="score-box">
+          <span class="score-label">Time</span>
+          <span id="timer" class="score-value">00:00.0</span>
+        </div>
+        <button id="restart-btn" class="restart-btn">New Game</button>
+      </section>
+
+      <div class="board-row">
+        <section class="board-wrap">
+          <div id="board" class="board">
+            <!-- 16개 셀은 render.js가 생성합니다 -->
+          </div>
+          <div id="start-overlay" class="overlay">
+            <p>Ready?</p>
+            <p class="overlay-detail">No warmup — the clock starts the second you hit Start.</p>
+            <div class="overlay-actions">
+              <button id="start-btn">Start Run</button>
+            </div>
+          </div>
+          <div id="overlay" class="overlay hidden">
+            <p id="overlay-message"></p>
+            <p id="overlay-detail" class="overlay-detail"></p>
+            <div id="overlay-nickname-form" class="overlay-nickname-form hidden">
+              <input id="overlay-nickname-input" type="text" maxlength="20" placeholder="Nickname, optional">
+              <select id="overlay-country-select"></select>
+              <button id="overlay-submit-btn">Submit</button>
+            </div>
+            <p id="overlay-status" class="overlay-status"></p>
+            <p id="overlay-percentile" class="overlay-percentile"></p>
+            <div class="overlay-actions">
+              <button id="overlay-retry-btn">Retry</button>
+            </div>
+          </div>
+        </section>
+
+        <aside class="ranking-panel">
+          <h2 class="ranking-title">World Fastest</h2>
+          <p class="ranking-sub">Only 2048 finishers are ranked, fastest first.</p>
+          <div class="leaderboard-table-wrap">
+            <table class="leaderboard-table">
+              <thead>
+                <tr><th>#</th><th>Player</th><th>Country</th><th>Time</th></tr>
+              </thead>
+              <tbody id="leaderboard-body">
+                <tr><td colspan="4">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </aside>
+      </div>
+
+      <div class="ad-slot ad-slot--below-board">Ad</div>
+    </div>
+
+    <aside class="content-column">
+      <section>
+        <h2>Rules, for the record</h2>
+        <p>
+          You already know how this works: arrow keys or swipe to slide, same numbers merge, a new tile
+          drops after every move. That part isn't the game. <strong>The game is the clock.</strong> Every
+          run is timed from the moment you hit Start, and the only number that matters at the end is how
+          fast you built the 2048 tile. No move limit, no undo, no second chances — one clean run, ranked
+          against everyone else who's tried.
+        </p>
+      </section>
+
+      <section>
+        <h2>Shaving seconds off your run</h2>
+        <p>
+          Anchor your highest tile in a corner and never make a move that pulls it out. Commit to one
+          build direction — always left, always down — instead of reacting tile by tile. Plan two or three
+          merges ahead so you're never forced into a bad move under time pressure, and never let a free
+          merge sit on the board while you chase something else. Every hesitation is time on the clock —
+          play decisively.
+        </p>
+      </section>
+
+      <section>
+        <h2>How ranking works</h2>
+        <p>
+          Only runs that actually reach the 2048 tile are recorded and ranked — anything else doesn't
+          appear anywhere. If your run falls short, it's not saved at all; the only number that lives on
+          the leaderboard is elapsed time for finished runs, fastest first. Reach 2048 and you can submit
+          a nickname and country to appear on the ranking panel beside the board.
+        </p>
+      </section>
+
+      <section>
+        <h2>FAQ</h2>
+        <p><strong>Is this game free?</strong> Yes — no installation or payment required, just play instantly in your browser.</p>
+        <p><strong>Are my records saved?</strong> Only runs that reach 2048 are saved — your elapsed time is recorded and used to calculate your rank among all 2048 finishers worldwide. Runs that don't reach 2048 aren't stored anywhere. We don't collect personally identifying information — only the nickname and country you choose to enter (optional) are shown publicly on the leaderboard.</p>
+        <p><strong>What is this based on?</strong> This game is an independent fan implementation inspired by the original 2048 by Gabriele Cirulli (released under a CC BY-SA-style open license).</p>
+      </section>
+
+      <div class="ad-slot ad-slot--sidebar">Ad</div>
+    </aside>
+  </div>
+
+  <div class="ad-slot ad-slot--below-content">Ad</div>
+</main>
+
+<footer class="site-footer">
+  <p>This is an independent fan project inspired by Gabriele Cirulli's original 2048.</p>
+  <p><a href="/about.html">About</a> · <a href="/privacy-policy.html">Privacy Policy</a></p>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="/js/grid.js"></script>
+<script src="/js/merge.js"></script>
+<script src="/js/gameState.js"></script>
+<script src="/js/timer.js"></script>
+<script src="/js/firebaseInit.js"></script>
+<script src="/js/stats.js"></script>
+<script src="/js/countries.js"></script>
+<script src="/js/render.js"></script>
+<script src="/js/input.js"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>
