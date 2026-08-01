@@ -38,6 +38,8 @@ a {
 
 .site-nav {
   display: flex;
+  flex-wrap: wrap;
+  row-gap: 4px;
   gap: 16px;
   align-items: center;
   max-width: 960px;
