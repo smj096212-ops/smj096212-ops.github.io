@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://smj096212-ops.github.io/wg-2048-speedrun/sitemap.xml
+Sitemap: https://smj096212-ops.github.io/sitemap.xml
